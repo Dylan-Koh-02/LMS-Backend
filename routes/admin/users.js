@@ -94,15 +94,15 @@ router.post("/", async function (req, res) {
   }
 });
 
-router.delete("/:id", async function (req, res) {
-  try {
-    const user = await getUser(req);
-    await user.destroy();
-    success(res, "Delete successful");
-  } catch (error) {
-    failure(res, error);
-  }
-});
+// router.delete("/:id", async function (req, res) {
+//   try {
+//     const user = await getUser(req);
+//     await user.destroy();
+//     success(res, "Delete successful");
+//   } catch (error) {
+//     failure(res, error);
+//   }
+// });
 
 router.put("/:id", async function (req, res) {
   try {

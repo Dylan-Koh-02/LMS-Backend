@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { Category } = require("../../models");
+const { Category, Course } = require("../../models");
 const { Op } = require("sequelize");
 const { NotFoundError, success, failure } = require("../../utils/response");
 
@@ -21,7 +21,10 @@ router.get("/", async function (req, res) {
     const offset = (currentPage - 1) * pageSize;
 
     const condition = {
-      order: [["id", "DESC"]],
+      order: [
+        ["rank", "ASC"],
+        ["id", "ASC"],
+      ],
       limit: pageSize,
       offset: offset,
     };
@@ -37,12 +40,12 @@ router.get("/", async function (req, res) {
     const { count, rows } = await Category.findAndCountAll(condition);
     success(res, "Query successful", {
       categories: rows,
-      pagination:{
+      pagination: {
         total: count,
         currentPage,
         pageSize,
-      }
-    })
+      },
+    });
   } catch (error) {
     failure(res, error);
   }
@@ -51,8 +54,8 @@ router.get("/", async function (req, res) {
 router.get("/:id", async function (req, res) {
   try {
     const category = await getCategory(req);
-    
-    success(res, "Query successful", {category});
+
+    success(res, "Query successful", { category });
   } catch (error) {
     failure(res, error);
   }
@@ -61,8 +64,8 @@ router.get("/:id", async function (req, res) {
 router.post("/", async function (req, res) {
   try {
     const body = filterBody(req);
-    const category = await Category.create(body); 
-    success(res, "Query successful", {category},201);
+    const category = await Category.create(body);
+    success(res, "Query successful", { category }, 201);
   } catch (error) {
     failure(res, error);
   }
@@ -71,8 +74,12 @@ router.post("/", async function (req, res) {
 router.delete("/:id", async function (req, res) {
   try {
     const category = await getCategory(req);
+    const count = await Course.count({ where: { categoryId: req.params.id } });
+    if (count > 0) {
+      throw new Error("当前分类有课程，无法删除。");
+    }
     await category.destroy();
-    success(res,'Delete successful');
+    success(res, "Delete successful");
   } catch (error) {
     failure(res, error);
   }
@@ -84,7 +91,7 @@ router.put("/:id", async function (req, res) {
 
     const body = filterBody(req);
     await category.update(body);
-    success(res, "Query successful", {category});
+    success(res, "Query successful", { category });
   } catch (error) {
     failure(res, error);
   }
@@ -93,10 +100,18 @@ router.put("/:id", async function (req, res) {
 // Function to get an category by ID
 async function getCategory(req) {
   const { id } = req.params;
-  const category = await Category.findByPk(id);
+  // const condition = {
+  //   include: [
+  //     {
+  //       model: Course,
+  //       as: "courses",
+  //     },
+  //   ],
+  // };
 
+  const category = await Category.findByPk(id);
   if (!category) {
-    throw new NotFoundError(`ID: ${id} not found`);
+    throw new NotFoundError(`ID: ${id}的分类未找到。`);
   }
 
   return category;

@@ -9,6 +9,10 @@ const adminArticlesRouter = require('./routes/admin/articles'); // Uncomment if 
 const adminCategoriesRouter = require('./routes/admin/categories'); // Uncomment if you want to use the category router
 const adminSettingsRouter = require('./routes/admin/settings'); // Uncomment if you want to use the settings router
 const adminUsersRouter = require('./routes/admin/users'); // Uncomment if you want to use the users router
+const adminCoursesRouter = require('./routes/admin/courses');
+const adminChaptersRouter = require('./routes/admin/chapters');
+const adminChartsRouter = require('./routes/admin/charts')
+
 
 let app = express();
 
@@ -25,5 +29,8 @@ app.use('/admin/articles',adminArticlesRouter); // Uncomment if you want to use 
 app.use('/admin/categories', adminCategoriesRouter); // Uncomment if you want to use the categories router
 app.use('/admin/settings', adminSettingsRouter); // Uncomment if you want to use the settings router
 app.use('/admin/users', adminUsersRouter);
+app.use('/admin/courses', adminCoursesRouter);
+app.use('/admin/chapters', adminChaptersRouter);
+
 
 module.exports = app;
