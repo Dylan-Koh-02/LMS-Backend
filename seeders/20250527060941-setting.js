@@ -7,9 +7,9 @@ module.exports = {
       "Settings",
       [
         {
-          name: "长乐未央",
-          icp: "鄂ICP备13016268号-11",
-          copyright: "© 2013 Changle Weiyang Inc. All Rights Reserved.",
+          name: "网站名称",
+          icp: "MYICP 12345678",
+          copyright: "© 2025 DylanKoh. All Rights Reserved.",
           createdAt: new Date(),
           updatedAt: new Date(),
         },

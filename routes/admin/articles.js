@@ -22,8 +22,8 @@ router.get("/", async function (req, res) {
 
     const condition = {
       order: [["id", "DESC"]],
-      limit: pageSize,
       offset: offset,
+      limit: pageSize,
     };
 
     if (query.title) {
@@ -64,7 +64,9 @@ router.post("/", async function (req, res) {
     const article = await Article.create(body); 
     success(res, "Query successful", {article},201);
   } catch (error) {
-    failure(res, error);
+    failure(res, error)
+    // res.json({errors: [error.message]})
+    // res.json({ error })
   }
 });
 

@@ -49,6 +49,8 @@ async function getSetting() {
  * @param req
  * @returns {{copyright: (string|*), icp: (string|string|DocumentFragment|*), name}}
  */
+
+
 function filterBody(req) {
   return {
     name: req.body.name,

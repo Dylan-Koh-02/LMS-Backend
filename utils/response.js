@@ -16,25 +16,26 @@ function success(res,message,data={},code=200){
 function failure(res,error){
   if(error.name ==='SequelizeValidationError'){
     const errors = error.errors.map((e) => e.message);
-    res.status(400).json({
+    return res.status(400).json({
       status:false,
       message:'Validation error',
       errors
     })
+  }
 
-    if(error.name==='NotFoundError'){
-      res.status(404).json({
-        status:false,
-        message:[error.message]
-      })
-    }
-
-    res.status(500).json({
+  if(error.name==='NotFoundError'){
+    return res.status(404).json({
       status:false,
-      message:'Internal server error',
-      error:[error.message]
+      message:[error.message]
     })
   }
+
+  res.status(500).json({
+    status:false,
+    message:'Internal server error',
+    error:[error.message]
+  })
+  
 }
 
 module.exports = {
