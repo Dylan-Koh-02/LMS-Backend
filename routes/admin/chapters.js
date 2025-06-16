@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { Chapter } = require("../../models");
 const { Op } = require("sequelize");
-const { NotFoundError, success, failure } = require("../../utils/response");
+const { NotFoundError } = require("../../utils/errors");
+const { success, failure } = require("../../utils/responses");
 
 // Routing to create, read, update, and delete chapters
 // GET /admin/chapter - Get a list of chapters with pagination and optional title filter

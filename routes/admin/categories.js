@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { Category, Course } = require("../../models");
 const { Op } = require("sequelize");
-const { NotFoundError, success, failure } = require("../../utils/response");
+const { NotFoundError } = require("../../utils/errors");
+const { success, failure } = require("../../utils/responses");
 
 // Routing to create, read, update, and delete categories
 // GET /admin/category - Get a list of categories with pagination and optional name filter

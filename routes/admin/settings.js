@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { Setting } = require("../../models");
-const { NotFoundError, success, failure } = require("../../utils/response");
+const { NotFoundError } = require("../../utils/errors");
+const { success, failure } = require("../../utils/responses");
 
 // Routing to create, read, update, and delete settings
 // GET /admin/setting - Get a list of settings with pagination and optional title filter
@@ -49,7 +50,6 @@ async function getSetting() {
  * @param req
  * @returns {{copyright: (string|*), icp: (string|string|DocumentFragment|*), name}}
  */
-
 
 function filterBody(req) {
   return {

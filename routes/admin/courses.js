@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { Course, Category, User } = require("../../models");
 const { Op } = require("sequelize");
-const { NotFoundError, success, failure } = require("../../utils/response");
+const { NotFoundError } = require("../../utils/errors");
+const { success, failure } = require("../../utils/responses");
 
 // Routing to create, read, update, and delete courses
 // GET /admin/course - Get a list of courses with pagination and optional title filter
@@ -95,6 +96,7 @@ router.get("/:id", async function (req, res) {
 router.post("/", async function (req, res) {
   try {
     const body = filterBody(req);
+    body.userId = req.user.id;
     const course = await Course.create(body);
     success(res, "Query successful", { course }, 201);
   } catch (error) {
@@ -104,17 +106,17 @@ router.post("/", async function (req, res) {
   }
 });
 
-router.delete('/:id', async function (req, res) {
+router.delete("/:id", async function (req, res) {
   try {
     const course = await getCourse(req);
 
     const count = await Chapter.count({ where: { courseId: req.params.id } });
     if (count > 0) {
-      throw new Error('当前课程有章节，无法删除。');
+      throw new Error("当前课程有章节，无法删除。");
     }
 
     await course.destroy();
-    success(res, '删除课程成功。');
+    success(res, "删除课程成功。");
   } catch (error) {
     failure(res, error);
   }
@@ -167,7 +169,6 @@ async function getCourse(req) {
 function filterBody(req) {
   return {
     categoryId: req.body.categoryId,
-    userId: req.body.userId,
     name: req.body.name,
     image: req.body.image,
     recommended: req.body.recommended,

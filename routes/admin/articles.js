@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { Article } = require("../../models");
 const { Op } = require("sequelize");
-const { NotFoundError, success, failure } = require("../../utils/response");
+const { NotFoundError } = require("../../utils/errors");
+const { success, failure } = require("../../utils/responses");
 
 // Routing to create, read, update, and delete articles
 // GET /admin/article - Get a list of articles with pagination and optional title filter
@@ -37,12 +38,12 @@ router.get("/", async function (req, res) {
     const { count, rows } = await Article.findAndCountAll(condition);
     success(res, "Query successful", {
       articles: rows,
-      pagination:{
+      pagination: {
         total: count,
         currentPage,
         pageSize,
-      }
-    })
+      },
+    });
   } catch (error) {
     failure(res, error);
   }
@@ -51,8 +52,8 @@ router.get("/", async function (req, res) {
 router.get("/:id", async function (req, res) {
   try {
     const article = await getArticle(req);
-    
-    success(res, "Query successful", {article});
+
+    success(res, "Query successful", { article });
   } catch (error) {
     failure(res, error);
   }
@@ -61,10 +62,10 @@ router.get("/:id", async function (req, res) {
 router.post("/", async function (req, res) {
   try {
     const body = filterBody(req);
-    const article = await Article.create(body); 
-    success(res, "Query successful", {article},201);
+    const article = await Article.create(body);
+    success(res, "Query successful", { article }, 201);
   } catch (error) {
-    failure(res, error)
+    failure(res, error);
     // res.json({errors: [error.message]})
     // res.json({ error })
   }
@@ -74,7 +75,7 @@ router.delete("/:id", async function (req, res) {
   try {
     const article = await getArticle(req);
     await article.destroy();
-    success(res,'Delete successful');
+    success(res, "Delete successful");
   } catch (error) {
     failure(res, error);
   }
@@ -86,7 +87,7 @@ router.put("/:id", async function (req, res) {
 
     const body = filterBody(req);
     await article.update(body);
-    success(res, "Query successful", {article});
+    success(res, "Query successful", { article });
   } catch (error) {
     failure(res, error);
   }

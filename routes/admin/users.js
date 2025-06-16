@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const { User } = require("../../models");
 const { Op } = require("sequelize");
-const { NotFoundError, success, failure } = require("../../utils/response");
+const { NotFoundError } = require("../../utils/errors");
+const { success, failure } = require("../../utils/responses");
 
 // Routing to create, read, update, and delete users
 // GET /admin/user - Get a list of users with pagination and optional title filter
@@ -50,7 +51,7 @@ router.get("/", async function (req, res) {
       };
     }
 
-    if (query.role) { 
+    if (query.role) {
       condition.where = {
         role: {
           [Op.eq]: query.role,
