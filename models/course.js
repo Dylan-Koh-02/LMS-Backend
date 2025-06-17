@@ -1,5 +1,8 @@
 "use strict";
 const { Model } = require("sequelize");
+const moment = require("moment");
+moment.locale("zh-cn");
+
 module.exports = (sequelize, DataTypes) => {
   class Course extends Model {
     /**
@@ -11,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
       models.Course.belongsTo(models.Category, { as: "category" });
       models.Course.belongsTo(models.User, { as: "user" });
       models.Course.hasMany(models.Chapter, { as: "chapters" });
+      models.Course.belongsToMany(models.User, {
+        through: models.Like,
+        foreignKey: "courseId",
+        as: "likeUsers",
+      });
     }
   }
   Course.init(
@@ -76,6 +84,19 @@ module.exports = (sequelize, DataTypes) => {
           },
         },
       },
+      createdAt: {
+        type: DataTypes.DATE,
+        get() {
+          return moment(this.getDataValue("createdAt")).format("LL"); //format("YYYY-MM-DD HH:mm:ss")
+        },
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        get() {
+          return moment(this.getDataValue("updatedAt")).format("LL");
+        },
+      },
+
       content: DataTypes.TEXT,
       likesCount: DataTypes.INTEGER,
       chaptersCount: DataTypes.INTEGER,
