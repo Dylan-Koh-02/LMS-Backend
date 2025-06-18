@@ -5,17 +5,24 @@ const { NotFoundError } = require('../utils/errors');
 const { success, failure } = require('../utils/responses');
 
 /**
- * 查询系统信息
- * GET /settings
+ * @route GET /settings
+ * @description Retrieve the current system settings.
+ *
+ * @returns {Object} JSON response containing the system settings.
+ *  - setting: Object representing the system settings.
+ *
+ * @response 200 - Settings successfully retrieved.
+ * @throws {NotFoundError} If no settings are found in the database.
+ * @throws {Error} For any other unexpected errors.
  */
 router.get('/', async function (req, res) {
   try {
     const setting = await Setting.findOne();
     if (!setting) {
-      throw new NotFoundError('未找到系统设置，请联系管理员。')
+      throw new NotFoundError('Settings not found. Please contact administrator.');
     }
 
-    success(res, '查询系统信息成功。', { setting });
+    success(res, 'Settings are returned', { setting });
   } catch (error) {
     failure(res, error);
   }

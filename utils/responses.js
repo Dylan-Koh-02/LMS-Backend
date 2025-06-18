@@ -1,3 +1,8 @@
+
+/**
+ * All responses use success(...) or failure(...) to ensure consistency
+ */
+
 function success(res, message, data = {}, code = 200) {
   res.status(code).json({
     status: true,
@@ -19,14 +24,15 @@ function failure(res, error) {
   if (error.name === "NotFoundError") {
     return res.status(404).json({
       status: false,
-      message: [error.message],
+      message: "Resource not exists",
+      errors: [error.message],
     });
   }
 
   if (error.name === "BadRequestError") {
     return res.status(400).json({
       status: false,
-      message: "请求参数错误",
+      message: "Wrong Request Parameters",
       errors: [error.message],
     });
   }
@@ -34,7 +40,7 @@ function failure(res, error) {
   if (error.name === "UnauthorizedError") {
     return res.status(401).json({
       status: false,
-      message: "认证失败",
+      message: "Verification failed",
       errors: [error.message],
     });
   }
@@ -42,16 +48,16 @@ function failure(res, error) {
   if (error.name === "JsonWebTokenError") {
     return res.status(401).json({
       status: false,
-      message: "认证失败",
-      errors: ["您提交的 token 错误。"],
+      message: "Verification failed",
+      errors: ["Wrong Token"],
     });
   }
 
   if (error.name === "TokenExpiredError") {
     return res.status(401).json({
       status: false,
-      message: "认证失败",
-      errors: ["您的 token 已过期。"],
+      message: "Verification failed",
+      errors: ["Expired Token"],
     });
   }
 

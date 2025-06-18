@@ -1,5 +1,6 @@
 /**
- * 自定义 400 错误类
+ * @class BadRequestError
+ * Customized 400 error class
  */
 class BadRequestError extends Error {
   constructor(message) {
@@ -9,7 +10,8 @@ class BadRequestError extends Error {
 }
 
 /**
- * 自定义 401 错误类
+ * @class UnauthorizedError
+ * Customized 401 error class
  */
 class UnauthorizedError extends Error {
   constructor(message) {
@@ -19,7 +21,8 @@ class UnauthorizedError extends Error {
 }
 
 /**
- * 自定义 404 错误类
+ * @class NotFoundError
+ * Customized 404 error class
  */
 class NotFoundError extends Error {
   constructor(message) {

@@ -1,12 +1,28 @@
 const express = require("express");
 const router = express.Router();
-const { Course, Category,Chapter,User } = require("../models");
-const { Op } = require("sequelize");
+const { Course, Category, Chapter, User } = require("../models");
 const { success, failure } = require("../utils/responses");
 
 /**
- * 查询课程列表
- * GET /courses
+ * @route GET /courses
+ * @description Retrieve a paginated list of courses by category ID.
+ *
+ * @param {number} req.query.categoryId - The ID of the category to filter courses by (required)
+ * @param {number} [req.query.currentPage=1] - The current page number for pagination (default is 1)
+ * @param {number} [req.query.pageSize=10] - Number of courses per page (default is 10)
+ *
+ * @returns {Object} JSON response with paginated list of courses:
+ * {
+ *   courses: Course[],
+ *   pagination: {
+ *     total: number,
+ *     currentPage: number,
+ *     pageSize: number
+ *   }
+ * }
+ *
+ * @responsecode 200 - Courses list returned successfully
+ * @throws {Error} If categoryId is missing or course retrieval fails
  */
 router.get("/", async function (req, res) {
   try {
@@ -42,8 +58,43 @@ router.get("/", async function (req, res) {
 });
 
 /**
- * 查询课程详情
- * GET /courses/:id
+ * @route GET /courses/:id
+ * @description Retrieve detailed course information by ID, including its category, creator, and chapters.
+ *
+ * @param {string} req.params.id - The ID of the course to retrieve
+ *
+ * @returns {Object} JSON response with course details:
+ * {
+ *   course: {
+ *     id: number,
+ *     title: string,
+ *     ...,
+ *     category: {
+ *       id: number,
+ *       name: string
+ *     },
+ *     user: {
+ *       id: number,
+ *       username: string,
+ *       nickname: string,
+ *       avatar: string,
+ *       company: string
+ *     },
+ *     chapters: [
+ *       {
+ *         id: number,
+ *         title: string,
+ *         rank: number,
+ *         createdAt: string
+ *       },
+ *       ...
+ *     ]
+ *   }
+ * }
+ *
+ * @responsecode 200 - Course found successfully
+ * @throws {NotFoundError} If no course exists with the given ID
+ * @throws {Error} If an error occurs during retrieval
  */
 router.get("/:id", async function (req, res) {
   try {
@@ -75,10 +126,10 @@ router.get("/:id", async function (req, res) {
 
     const course = await Course.findByPk(id, condition);
     if (!course) {
-      throw new NotFoundError(`ID: ${id}的课程未找到。`);
+      throw new NotFoundError(`Course with ID:${id} is not found.`);
     }
 
-    success(res, "查询课程成功。", { course });
+    success(res, "Course Details Found!", { course });
   } catch (error) {
     failure(res, error);
   }

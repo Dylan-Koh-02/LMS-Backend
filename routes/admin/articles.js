@@ -5,14 +5,29 @@ const { Op } = require("sequelize");
 const { NotFoundError } = require("../../utils/errors");
 const { success, failure } = require("../../utils/responses");
 
-// Routing to create, read, update, and delete articles
-// GET /admin/article - Get a list of articles with pagination and optional title filter
-// GET /admin/article/:id - Get a specific article by ID
-// POST /admin/article - Create a new article
-// DELETE /admin/article/:id - Delete an article by ID
-// PUT /admin/article/:id - Update an article by ID
-// Middleware to handle article-related routes
-
+/**
+ * @route GET /admin/article
+ * @description Get a paginated list of articles, optionally filtered by title.
+ *
+ * @queryparam {number} [currentPage=1] - The current page number
+ * @queryparam {number} [pageSize=10] - Number of articles per page
+ * @queryparam {string} [title] - Optional title keyword for filtering
+ *
+ * @returns {Object} Response object containing users and pagination info
+ *  - articles: {Array<Object>} List of existing articles with properties:
+ *    - id: {number} Article ID
+ *    - title: {string} Article title
+ *    - content: {string} Article content
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
+ *  - pagination: {Object} Pagination metadata
+ *    - total: {number} Total number of matching articles
+ *    - currentPage: {number} Current page number
+ *    - pageSize: {number} Number of items per page
+ *
+ * @responsecode 200 - Article retrieved successfully
+ * @throws {Error} For any errors during retrieval
+ */
 router.get("/", async function (req, res) {
   try {
     const query = req.query;
@@ -49,6 +64,24 @@ router.get("/", async function (req, res) {
   }
 });
 
+/**
+ * @route GET /admin/article/:id
+ * @description Retrieve the details of a single article by its ID.
+ *
+ * @param {string} req.params.id - The ID of the article to retrieve
+ *
+ * @returns {Object} JSON response containing the article details:
+ *   - articles: {Object} Existing article with properties:
+ *     - id: {number} Article ID
+ *     - title: {string} Article title
+ *     - content: {string} Article content
+ *     - createdAt: {string} Creation timestamp
+ *     - updatedAt: {string} Last update timestamp
+ *
+ * @responsecode 200 - Article retrieved successfully
+ * @throws {NotFoundError} If the article with the specified ID does not exist
+ * @throws {Error} For any other errors during retrieval
+ */
 router.get("/:id", async function (req, res) {
   try {
     const article = await getArticle(req);
@@ -59,6 +92,25 @@ router.get("/:id", async function (req, res) {
   }
 });
 
+/**
+ * @route POST /admin/article
+ * @description Create a new article using the provided request body.
+ *
+ * @body {string} title - The title of the article
+ * @body {string} content - The content of the article
+ *
+ * @returns {Object} JSON response containing the article details:
+ *   - articles: {Object} Created article with properties:
+ *     - id: {number} Article ID
+ *     - title: {string} Article title
+ *     - content: {string} Article content
+ *     - createdAt: {string} Creation timestamp
+ *     - updatedAt: {string} Last update timestamp
+ *
+ * @responsecode 201 - Article created successfully
+ * @throws {SequelizeValidationError} If required fields are missing or invalid
+ * @throws {Error} For any other errors during creation
+ */
 router.post("/", async function (req, res) {
   try {
     const body = filterBody(req);
@@ -71,6 +123,24 @@ router.post("/", async function (req, res) {
   }
 });
 
+/**
+ * @route DELETE /admin/article/:id
+ * @description Delete an article by its ID.
+ *
+ * @param {string} req.params.id - The ID of the article to delete
+ *
+ * @returns {Object} JSON response indicating success:
+ * {
+ *   message: "Delete successful"
+ * }
+ *
+ * @responsecode 200 - Article deleted successfully
+ * @throws {NotFoundError} If no article is found with the given ID
+ * @throws {Error} For any other errors during deletion
+ * {
+ *   message: "Delete successful"
+ * }
+ */
 router.delete("/:id", async function (req, res) {
   try {
     const article = await getArticle(req);
@@ -81,6 +151,26 @@ router.delete("/:id", async function (req, res) {
   }
 });
 
+/**
+ * @route PUT /admin/article/:id
+ * @description Update an existing article by its ID with new title and/or content.
+ *
+ * @param {string} req.params.id - The ID of the article to update
+ * @body {string} [title] - The new title of the article (optional)
+ * @body {string} [content] - The new content of the article (optional)
+ *
+ * @returns {Object} JSON response containing the updated article:
+ *   - articles: {Object} Updated article with properties:
+ *     - id: {number} Article new ID
+ *     - title: {string} Article new title
+ *     - content: {string} Article new content
+ *     - createdAt: {string} Creation timestamp
+ *     - updatedAt: {string} Last update timestamp
+ *
+ * @responsecode 200 - Article updated successfully
+ * @throws {NotFoundError} If the article with the specified ID does not exist
+ * @throws {Error} For any other errors during update
+ */
 router.put("/:id", async function (req, res) {
   try {
     const article = await getArticle(req);
@@ -93,19 +183,33 @@ router.put("/:id", async function (req, res) {
   }
 });
 
-// Function to get an article by ID
+/**
+ * @function getArticle
+ * @description Retrieves an article by ID from the request path parameters.
+ *
+ * @param {import('express').Request} req - Express request object containing params.id
+ * 
+ * @returns {Promise<Article>} Resolves with the found article
+ * @throws {NotFoundError} If no article is found with the provided ID
+ */
 async function getArticle(req) {
   const { id } = req.params;
   const article = await Article.findByPk(id);
 
   if (!article) {
-    throw new NotFoundError(`ID: ${id} not found`);
+    throw new NotFoundError(`Article with ID:${id} is not found`);
   }
 
   return article;
 }
 
-// Function to filter the request body for article creation or update
+/**
+ * @function filterBody
+ * @description Extracts whitelisted properties from request body
+ *
+ * @param {import('express').Request} req - Express request object
+ * @returns {Object} Filtered object containing only title and content
+ */
 function filterBody(req) {
   return {
     title: req.body.title,

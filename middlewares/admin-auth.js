@@ -1,32 +1,45 @@
 const jwt = require("jsonwebtoken");
 const { User } = require("../models");
 const { UnauthorizedError } = require("../utils/errors");
-const { success, failure } = require("../utils/responses");
+const { failure } = require("../utils/responses");
 
+/**
+ * @middleware Admin Authorization
+ * @description Verifies JWT token, checks user existence and admin role before granting access.
+ *
+ * @param {string} req.headers.token - JWT token from the request header
+ *
+ * @sets {object} req.user - The authenticated user object, if authorized
+ * 
+ * @returns {void}
+ * 
+ * @throws {UnauthorizedError} If token is missing, invalid, user does not exist, or user is not an admin
+ * @throws {Error} For any other unexpected errors
+ */
 module.exports = async (req, res, next) => {
   try {
     const { token } = req.headers;
     if (!token) {
-      throw new UnauthorizedError("当前接口需要认证才能访问。");
+      throw new UnauthorizedError("Authorization token is required.");
     }
-    // 验证 token 是否正确
+    // Authenticate the token
     const decoded = jwt.verify(token, process.env.SECRET);
 
-    // 从 jwt 中，解析出之前存入的 userId
+    // Get userId from the decoded token
     const { userId } = decoded;
 
     const user = await User.findByPk(userId);
     if (!user) {
-      throw new UnauthorizedError("用户不存在。");
+      throw new UnauthorizedError("User not exists");
     }
 
-    // 验证当前用户是否是管理员
+    // Authenticate the user role
     if (user.role !== 100) {
-      throw new UnauthorizedError("您没有权限使用当前接口。");
-    } // 如果通过验证，将 user 对象挂载到 req 上，方便后续中间件或路由使用
+      throw new UnauthorizedError("Not authorized as admin.");
+    } // If authenticated, set userId in request object
     req.user = user;
 
-    // 一定要加 next()，才能继续进入到后续中间件或路由
+    // next() is required to pass control to the next middleware
     next();
   } catch (error) {
     failure(res, error);

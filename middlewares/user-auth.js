@@ -2,24 +2,36 @@ const jwt = require('jsonwebtoken');
 const { UnauthorizedError } = require('../utils/errors');
 const { failure } = require('../utils/responses');
 
+/**
+ * @middleware User Authentication
+ * @description Verifies JWT token and attaches the authenticated user's ID to the request object.
+ *
+ * @param {string} req.headers.token - JWT token from the request header
+ *
+ * @sets {string} req.userId - The authenticated user's ID
+ * 
+ * @returns {void}
+ * 
+ * @throws {UnauthorizedError} If token is missing or invalid
+ * @throws {Error} For any other unexpected errors
+ */
 module.exports = async (req, res, next) => {
   try {
-    // 判断 Token 是否存在
     const { token } = req.headers;
     if (!token) {
-      throw new UnauthorizedError('当前接口需要认证才能访问。')
+      throw new UnauthorizedError('Authorization token is required.')
     }
 
-    // 验证 token 是否正确
+    // Authenticate the token
     const decoded = jwt.verify(token, process.env.SECRET);
 
-    // 从 jwt 中，解析出之前存入的 userId
+    // Get userId from the decoded token
     const { userId } = decoded;
 
-    // 如果通过验证，将 userId 挂载到 req 上，方便后续中间件或路由使用
+    // If authenticated, set userId in request object
     req.userId = userId;
 
-    // 一定要加 next()，才能继续进入到后续中间件或路由
+    // next() is required to pass control to the next middleware
     next();
   } catch (error) {
     failure(res, error);

@@ -27,12 +27,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
-          notNull: { msg: "分类ID必须填写。" },
-          notEmpty: { msg: "分类ID不能为空。" },
+          notNull: { msg: "Category ID is required." },
+          notEmpty: { msg: "Category ID cannot be empty." },
           async isPresent(value) {
             const category = await sequelize.models.Category.findByPk(value);
             if (!category) {
-              throw new Error(`ID为：${value} 的分类不存在。`);
+              throw new Error(`Course with ID:${value} not exists.`);
             }
           },
         },
@@ -41,12 +41,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
-          notNull: { msg: "用户ID必须填写。" },
-          notEmpty: { msg: "用户ID不能为空。" },
+          notNull: { msg: "User ID is required." },
+          notEmpty: { msg: "User ID is required." },
           async isPresent(value) {
             const user = await sequelize.models.User.findByPk(value);
             if (!user) {
-              throw new Error(`ID为：${value} 的用户不存在。`);
+              throw new Error(`User with ID:${value} not exists.`);
             }
           },
         },
@@ -55,15 +55,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          notNull: { msg: "名称必须填写。" },
-          notEmpty: { msg: "名称不能为空。" },
-          len: { args: [2, 45], msg: "名称长度必须是2 ~ 45之间。" },
+          notNull: { msg: "Name is required." },
+          notEmpty: { msg: "Name cannot be empty." },
+          len: { args: [2, 45], msg: "Length of name must be between 2 ~ 45 characters." },
         },
       },
       image: {
         type: DataTypes.STRING,
         validate: {
-          isUrl: { msg: "图片地址不正确。" },
+          isUrl: { msg: "URL is incorrect." },
         },
       },
       recommended: {
@@ -71,7 +71,7 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           isIn: {
             args: [[true, false]],
-            msg: "是否推荐的值必须是，推荐：true 不推荐：false。",
+            msg: "The value of recommended must be true(recommended) or false(not recommended).",
           },
         },
       },
@@ -80,7 +80,7 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
           isIn: {
             args: [[true, false]],
-            msg: "是否入门课程的值必须是，推荐：true 不推荐：false。",
+            msg: "The value of introductory must be true(introductory) or false(not introductory).",
           },
         },
       },

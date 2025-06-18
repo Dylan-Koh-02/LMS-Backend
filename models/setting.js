@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   Setting.init({
     name: DataTypes.STRING,
-    icp: DataTypes.STRING,
     copyright: DataTypes.STRING
   }, {
     sequelize,

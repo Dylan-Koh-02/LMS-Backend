@@ -35,9 +35,9 @@ const adminAuthRouter = require("./routes/admin/auth");
 /*-------------------------------------------------------------------------*/
 
 const app = express();
-// CORS 跨域配置
+// CORS - Cross Origin Resource Sharing
 const corsOptions = {
-  origin: ["https://dylan.cn", "http://localhost:5500"],
+  origin: ["https://dylan.com", "http://localhost:5500"],
 };
 
 // Enable middlewares

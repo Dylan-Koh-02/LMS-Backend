@@ -1,13 +1,24 @@
 const express = require("express");
 const router = express.Router();
-const { sequelize, User } = require("../../models");
-const { Op } = require("sequelize");
-const { NotFoundError } = require("../../utils/errors");
+const { sequelize} = require("../../models");
 const { success, failure } = require("../../utils/responses");
 
 /**
- * 统计用户性别
- * GET /admin/charts/sex
+ * @route GET /admin/charts/sex
+ * @description Retrieve monthly user registration counts, grouped by year and month.
+ *
+ * This route queries the database to count how many users were created in each month,
+ * formatted as "YYYY-MM". The result is structured into two arrays:
+ *  - months: array of month strings
+ *  - values: array of user counts corresponding to each month
+ *
+ * @returns {Object} JSON response containing:
+ *  - data: {
+ *      months: string[], // e.g. ["2023-01", "2023-02", ...]
+ *      values: number[]  // e.g. [15, 20, ...]
+ *    }
+ *
+ * @throws {Error} If database query fails.
  */
 router.get("/sex", async function (req, res) {
   try {
@@ -25,20 +36,22 @@ router.get("/sex", async function (req, res) {
       data.values.push(item.value);
     });
 
-    // const results = await User.findAll({
-    //   attributes: [
-    //     [
-    //       sequelize.fn("DATE_FORMAT", sequelize.col("createdAt"), "%Y-%m"),
-    //       "month",
-    //     ], // 使用 DATE_FORMAT 转换日期格式
-    //     [sequelize.fn("COUNT", "*"), "value"], // 统计每个月的用户数量
-    //   ],
-    //   group: ["month"], // 按年月分组
-    //   order: [["month", "ASC"]], // 按年月排序,
-    //   raw: true,
-    // });
-
-    success(res, "查询每月用户数量成功。", { data });
+    /**
+     * const results = await User.findAll({
+      attributes: [
+        [
+          sequelize.fn("DATE_FORMAT", sequelize.col("createdAt"), "%Y-%m"),
+          "month",
+        ], // Use DATE_FORMAT Convert createdAt to "YYYY-MM" format
+        [sequelize.fn("COUNT", "*"), "value"], // Count users per month
+      ],
+      group: ["month"], // Group by month
+      order: [["month", "ASC"]], // Order by month ascending
+      raw: true,
+    }); 
+    */
+    
+    success(res, "Query Successful", { data });
   } catch (error) {
     failure(res, error);
   }

@@ -5,8 +5,24 @@ const { success, failure } = require("../utils/responses");
 const { NotFoundError } = require("../utils/errors");
 
 /**
- * 查询文章列表
- * GET /articles
+ * @route GET /articles
+ * @description Get a paginated list of articles, excluding the content field.
+ *
+ * @param {number} [req.query.currentPage=1] - The current page number (default is 1)
+ * @param {number} [req.query.pageSize=10] - Number of articles per page (default is 10)
+ *
+ * @returns {Object} JSON response with articles list and pagination info:
+ * {
+ *   articles: Article[],
+ *   pagination: {
+ *     total: number,
+ *     currentPage: number,
+ *     pageSize: number
+ *   }
+ * }
+ *
+ * @responsecode 200 - Articles list returned successfully
+ * @throws {Error} If an error occurs during fetching articles
  */
 router.get("/", async function (req, res) {
   try {
@@ -23,7 +39,7 @@ router.get("/", async function (req, res) {
     };
 
     const { count, rows } = await Article.findAndCountAll(condition);
-    success(res, "查询文章列表成功。", {
+    success(res, "Articles List is successfully returned", {
       articles: rows,
       pagination: {
         total: count,
@@ -37,8 +53,18 @@ router.get("/", async function (req, res) {
 });
 
 /**
- * 查询文章详情
- * GET /articles/:id
+ * @route GET /articles/:id
+ * @description Get article details by ID.
+ *
+ * @param {string} req.params.id - The ID of the article to retrieve
+ *
+ * @returns {Object} JSON response with the article details:
+ * {
+ *   article: Article
+ * }
+ *
+ * @responsecode 200 - Article found successfully
+ * @throws {NotFoundError} If no article exists with the given ID
  */
 router.get("/:id", async function (req, res) {
   try {
@@ -46,10 +72,10 @@ router.get("/:id", async function (req, res) {
 
     const article = await Article.findByPk(id);
     if (!article) {
-      throw new NotFoundError(`ID: ${id}的文章未找到。`);
+      throw new NotFoundError(`Article with ID${id} is not found。`);
     }
 
-    success(res, "查询文章成功。", { article });
+    success(res, "Article Found", { article });
   } catch (error) {
     failure(res, error);
   }

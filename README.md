@@ -4,16 +4,15 @@ A complete LMS (Learning Management System) built with **Node.js**, **Express**,
 
 ## ⚙️ Features
 
-- RESTful API with authentication & authorization
-- Admin and user role support
-- Course and category management
-- Database migrations and seeders
-- Docker support for database containerization
+- 🔐 RESTful API with authentication & authorization  
+- 👥 Role-based access (Admin & User)  
+- 📘 Course and category management  
+- 🧱 Database migrations and seeders  
+- 🐳 Dockerized MySQL support  
 
+## 🚀 Getting Started
 
-## 🛠️ Setup Instructions
-
-### 1. Configure Environment Variables
+### 1️⃣ Configure Environment Variables
 
 Copy the example environment file and update the configuration:
 
@@ -22,7 +21,7 @@ PORT=3000
 SECRET=<YOUR KEY>
 ```
 
-### 2. Generate a Secret Key
+### 2️⃣ Generate a Secret Key
 
 Run the following in the command line:
 
@@ -41,28 +40,28 @@ Copy the generated secret key and paste it into the SECRET field of your .env fi
 > Tip: Press `Ctrl + C` to exit interactive mode.
 
 
-### 3. Configure the Database
+### 3️⃣ Set Up the Database
 
 The project uses Docker to run a MySQL database container. After installing Docker, you can start the MySQL container with:
 
-\```shell
+```shell
 docker-compose up -d
-\```
+```
 
 If prefer to use your own MySQL installation, update the username and password fields in config/config.json:
 
-\```json
+```json
 {
   "development": {
     "username": "your_database_username",
     "password": "your_database_password"
   }
 }
-\```
+```
 
-### 4. Install and Run the Project
+### 4️⃣ Install & Run the Project
 
-\```shell
+```shell
 # Install dependencies
 npm i
 
@@ -77,16 +76,16 @@ npx sequelize-cli db:seed:all
 
 # Start the server
 npm start
-\```
+```
 
-Once the server is running, open your browser and visit:
-http://localhost:3000
+Once the server is running, visit:
+👉 http://localhost:3000
 
-For detailed API usage, refer to the API documentation.
+Check the API documentation for detailed usage.
 
-## Default Admin Account
+## 🔐 Default Admin Credentials
 
-\```txt
-账号：admin
-密码: 123123
-\```
+```txt
+login：admin
+password: 123123
+```

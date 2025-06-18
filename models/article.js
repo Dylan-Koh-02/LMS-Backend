@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         len:{
           args:[2,45],
-          msg:'Message title must be between 2 and 45 characters'
+          msg:'Message title must be between 2 ~ 45 characters.'
         }
       },
     },  content: DataTypes.TEXT

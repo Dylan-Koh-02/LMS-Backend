@@ -5,8 +5,25 @@ const { success, failure } = require("../utils/responses");
 const { Op } = require("sequelize");
 
 /**
- * 搜索课程
- * GET /search
+ * @route GET /search
+ * @description Search for courses by name with pagination support.
+ *
+ * @param {string} [req.query.name] - Partial course name to search for (optional)
+ * @param {number} [req.query.currentPage=1] - Current page number for pagination (default is 1)
+ * @param {number} [req.query.pageSize=10] - Number of courses per page (default is 10)
+ *
+ * @returns {Object} JSON response with search results and pagination info:
+ * {
+ *   courses: Course[],
+ *   pagination: {
+ *     total: number,
+ *     currentPage: number,
+ *     pageSize: number
+ *   }
+ * }
+ *
+ * @responsecode 200 - Search completed successfully
+ * @throws {Error} If an error occurs during the search operation
  */
 router.get("/", async function (req, res) {
   try {
@@ -31,7 +48,7 @@ router.get("/", async function (req, res) {
     }
 
     const { count, rows } = await Course.findAndCountAll(condition);
-    success(res, "搜索课程成功。", {
+    success(res, "Search successfully", {
       courses: rows,
       pagination: {
         total: count,

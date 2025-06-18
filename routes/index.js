@@ -4,12 +4,22 @@ const { Course, Category, User } = require("../models");
 const { success, failure } = require("../utils/responses");
 
 /**
- * 查询首页数据
- * GET /
+ * @route GET /
+ * @description Retrieve homepage content including recommended, most liked, and introductory courses.
+ *
+ * @returns {Object} JSON response with categorized course lists:
+ * {
+ *   recommendedCourses: Course[], // Courses marked as recommended
+ *   likesCourses: Course[],       // Top liked courses
+ *   introductoryCourses: Course[] // Courses marked as introductory
+ * }
+ *
+ * @responsecode 200 - Homepage course lists returned successfully
+ * @throws {Error} If an error occurs while fetching courses
  */
 router.get("/", async function (req, res, next) {
   try {
-    // 焦点图（推荐的课程）
+    // Recommended Courses
     const recommendedCourses = await Course.findAll({
       attributes: { exclude: ["CategoryId", "UserId", "content"] },
       include: [
@@ -46,7 +56,7 @@ router.get("/", async function (req, res, next) {
       limit: 10,
     });
 
-    success(res, "获取首页数据成功。", {
+    success(res, "Recommended, Liked and Introductory Courses are returned", {
       recommendedCourses,
       likesCourses,
       introductoryCourses,

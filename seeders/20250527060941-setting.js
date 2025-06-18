@@ -7,8 +7,7 @@ module.exports = {
       "Settings",
       [
         {
-          name: "网站名称",
-          icp: "MYICP 12345678",
+          name: "Dylan's Backend Project",
           copyright: "© 2025 DylanKoh. All Rights Reserved.",
           createdAt: new Date(),
           updatedAt: new Date(),

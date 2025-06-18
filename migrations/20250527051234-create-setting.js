@@ -12,9 +12,6 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
-      icp: {
-        type: Sequelize.STRING,
-      },
       copyright: {
         type: Sequelize.STRING,
       },

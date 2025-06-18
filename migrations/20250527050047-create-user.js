@@ -51,15 +51,15 @@ module.exports = {
       },
     });
     await queryInterface.addIndex("Users", {
-      fields: ["email"], // 要索引的字段
-      unique: true, // 唯一索引
+      fields: ["email"], // Index on email field
+      unique: true, // Ensure email is unique
     });
     await queryInterface.addIndex("Users", {
-      fields: ["username"],
-      unique: true,
+      fields: ["username"], // Index on username field
+      unique: true, // Ensure username is unique
     });
     await queryInterface.addIndex("Users", {
-      fields: ["role"],
+      fields: ["role"], // Index on role field
     });
   },
   async down(queryInterface, Sequelize) {

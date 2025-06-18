@@ -13,21 +13,31 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
 /**
- * 管理员登录
- * POST /admin/auth/sign_in
+ * @route POST /admin/auth/sign_in
+ * @description Authenticate an admin user using email or username and password, then return a JWT token.
+ *
+ * @body {string} login - Admin's email or username (required).
+ * @body {string} password - Admin's password (required).
+ *
+ * @returns {Object} JSON response containing the authentication token.
+ *  - token: JWT token valid for 30 days.
+ *
+ * @response 200 - Login successful and token returned.
+ * @throws {BadRequestError} If login or password is missing.
+ * @throws {NotFoundError} If the user does not exist.
+ * @throws {UnauthorizedError} If password is incorrect or user is not authorized as admin.
+ * @throws {Error} For any other unexpected errors.
  */
-
 router.post("/sign_in", async (req, res) => {
   try {
-
     const { login, password } = req.body;
 
     if (!login) {
-      throw new BadRequestError("邮箱/用户名必须填写。");
+      throw new BadRequestError("Email/Username is required.");
     }
 
     if (!password) {
-      throw new BadRequestError("密码必须填写。");
+      throw new BadRequestError("Password is required.");
     }
 
     const condition = {
@@ -36,23 +46,23 @@ router.post("/sign_in", async (req, res) => {
       },
     };
 
-    // 通过email或username，查询用户是否存在
+    // Check if the user exists by email or username
     const user = await User.findOne(condition);
     if (!user) {
-      throw new NotFoundError("用户不存在，无法登录。");
+      throw new NotFoundError("User not exists. Login failed");
     }
 
-    // 验证密码
+    // Authenticate the password
     const isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedError("密码错误。");
+      throw new UnauthorizedError("Password is incorrect.");
     }
 
     if (user.role !== 100) {
-      throw new UnauthorizedError("您没有权限登录管理员后台。");
+      throw new UnauthorizedError("Not authorized to access.");
     }
 
-    // 生成身份验证令牌
+    // Generate Token
     const token = jwt.sign(
       {
         userId: user.id,
@@ -60,7 +70,7 @@ router.post("/sign_in", async (req, res) => {
       process.env.SECRET,
       { expiresIn: "30d" }
     );
-    success(res, "登录成功。", { token });
+    success(res, "Login successfully", { token });
   } catch (error) {
     failure(res, error);
   }

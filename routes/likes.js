@@ -5,18 +5,35 @@ const { success, failure } = require("../utils/responses");
 const { NotFoundError } = require("../utils/errors");
 
 /**
- * 查询用户点赞的课程
- * GET /likes
+ * @route GET /likes
+ * @description Retrieve a paginated list of courses liked by the authenticated user.
+ *
+ * @param {number} [req.query.currentPage=1] - Current page number for pagination (default is 1)
+ * @param {number} [req.query.pageSize=10] - Number of items per page (default is 10)
+ *
+ * @sets {string} req.userId - The authenticated user's ID (set by authentication middleware)
+ *
+ * @returns {Object} JSON response with liked courses and pagination info:
+ * {
+ *   courses: Course[],
+ *   pagination: {
+ *     total: number,
+ *     currentPage: number,
+ *     pageSize: number
+ *   }
+ * }
+ *
+ * @responsecode 200 - Liked courses returned successfully
+ * @throws {Error} If user not found or retrieval fails
  */
 router.get("/", async function (req, res) {
   try {
-    // 通过课程查询点赞的用户
     const query = req.query;
     const currentPage = Math.abs(Number(query.currentPage)) || 1;
     const pageSize = Math.abs(Number(query.pageSize)) || 10;
     const offset = (currentPage - 1) * pageSize;
 
-    // 查询当前用户
+    // Find User by ID from the request
     const user = await User.findByPk(req.userId);
     const courses = await user.getLikeCourses({
       joinTableAttributes: [],
@@ -27,7 +44,7 @@ router.get("/", async function (req, res) {
     });
 
     const count = await user.countLikeCourses();
-    success(res, "查询用户点赞的课程成功。", {
+    success(res, "Liked Courses are returned", {
       courses,
       pagination: {
         total: count,
@@ -41,8 +58,21 @@ router.get("/", async function (req, res) {
 });
 
 /**
- * 点赞、取消赞
- * POST /likes
+ * @route POST /likes
+ * @description Like or unlike a course based on the user's current like status.
+ *
+ * @param {string} req.body.courseId - The ID of the course to like or unlike
+ *
+ * @sets {string} req.userId - The authenticated user's ID (set by authentication middleware)
+ *
+ * @returns {Object} JSON response with a success message:
+ * {
+ *   message: "Liked successfully." | "Unliked successfully."
+ * }
+ *
+ * @responsecode 200 - Action completed successfully
+ * @throws {NotFoundError} If the course does not exist
+ * @throws {Error} If an error occurs during the like/unlike process
  */
 router.post("/", async function (req, res) {
   try {
@@ -51,7 +81,7 @@ router.post("/", async function (req, res) {
 
     const course = await Course.findByPk(courseId);
     if (!course) {
-      throw new NotFoundError("课程不存在。");
+      throw new NotFoundError("Course not exists");
     }
 
     const like = await Like.findOne({
@@ -63,12 +93,12 @@ router.post("/", async function (req, res) {
     if (!like) {
       await Like.create({ courseId, userId });
       await course.increment("likesCount");
-      success(res, "点赞成功。");
+      success(res, "Liked successfully.");
     } else {
-      // 如果点赞过了，那就删除。并且课程的 likesCount - 1
+      // If likes exists, cancel it and likesCount - 1
       await like.destroy();
       await course.decrement("likesCount");
-      success(res, "取消赞成功。");
+      success(res, "Unliked successfully.");
     }
   } catch (error) {
     failure(res, error);

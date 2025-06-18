@@ -12,8 +12,23 @@ const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 
 /**
- * 用户注册
- * POST /auth/sign_up
+ * @route POST /auth/sign_up
+ * @description Register a new user account with email, username, nickname and password
+ *
+ * @param {string} req.body.email - User's email address
+ * @param {string} req.body.username - User's username
+ * @param {string} req.body.nickname - User's nickname
+ * @param {string} req.body.password - User's password
+ * @param {number} [sex=2] - User's sex (default 2)
+ * @param {number} [role=0] - User's role (default 0)
+ *
+ * @returns {Object} JSON response with created user (password excluded)
+ * {
+ *   user: User
+ * }
+ *
+ * @responsecode 201 - User created successfully
+ * @throws {Error} If user creation fails (e.g., validation error)
  */
 router.post("/sign_up", async function (req, res) {
   try {
@@ -26,62 +41,74 @@ router.post("/sign_up", async function (req, res) {
       role: 0,
     };
 
-    const user = await User.create(body);
-    delete user.dataValues.password; // 删除密码
+    const user = await User.create(body); // Create User in database
+    delete user.dataValues.password; // Exclude password from response
 
-    success(res, "创建用户成功。", { user }, 201);
+    success(res, "User is created successfully!", { user }, 201);
   } catch (error) {
     failure(res, error);
   }
 });
 
 /**
- * 用户登录
- * POST /auth/sign_in
+ * @route POST /auth/sign_in
+ * @description Authenticate user by email or username and password, and return a JWT token.
+ *
+ * @param {string} req.body.login - User's email or username used for login
+ * @param {string} req.body.password - User's password
+ *
+ * @returns {Object} JSON response with JWT token:
+ * {
+ *   token: string
+ * }
+ *
+ * @responsecode 200 - Login successful, token returned
+ * @throws {BadRequestError} If login or password is missing
+ * @throws {NotFoundError} If user does not exist
+ * @throws {UnauthorizedError} If password is incorrect
  */
-router.post('/sign_in', async (req, res) => {
+router.post("/sign_in", async (req, res) => {
   try {
     const { login, password } = req.body;
 
     if (!login) {
-      throw new BadRequestError('邮箱/用户名必须填写。');
+      throw new BadRequestError("Email/Username is required.");
     }
 
     if (!password) {
-      throw new BadRequestError('密码必须填写。');
+      throw new BadRequestError("Password is required.");
     }
 
     const condition = {
       where: {
-        [Op.or]: [
-          { email: login },
-          { username: login }
-        ]
-      }
+        [Op.or]: [{ email: login }, { username: login }],
+      },
     };
 
-    // 通过email或username，查询用户是否存在
+    // Check if user exists by email or username
     const user = await User.findOne(condition);
     if (!user) {
-      throw new NotFoundError('用户不存在，无法登录。');
+      throw new NotFoundError("User not found.");
     }
 
-    // 验证密码
+    // Authenticate Password
     const isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!isPasswordValid) {
-      throw new UnauthorizedError('密码错误。');
+      throw new UnauthorizedError("Wrong password.");
     }
 
-    // 生成身份验证令牌
-    const token = jwt.sign({
-        userId: user.id
-      }, process.env.SECRET, { expiresIn: '30d' }
+    // Generate JWT Token
+    const token = jwt.sign(
+      {
+        userId: user.id,
+      },
+      process.env.SECRET,
+      { expiresIn: "30d" } // Expires in 30 days
     );
-    success(res, '登录成功。', { token });
+    success(res, "Login successfully!", { token });
   } catch (error) {
     failure(res, error);
   }
 });
-
 
 module.exports = router;
