@@ -1,4 +1,4 @@
-# 📚 Full-Stack Learning Management System (LMS)
+# 📚 Backend Learning Management System (LMS)
 
 A complete LMS (Learning Management System) built with **Node.js**, **Express**, **MySQL**, and **Sequelize ORM**. This project provides essential features like user authentication, course management, and admin control—ideal for e-learning platforms.
 
