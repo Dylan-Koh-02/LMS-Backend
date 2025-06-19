@@ -9,11 +9,11 @@ const { success, failure } = require("../../utils/responses");
  * @route GET /admin/article
  * @description Get a paginated list of articles, optionally filtered by title.
  *
- * @queryparam {number} [currentPage=1] - The current page number
- * @queryparam {number} [pageSize=10] - Number of articles per page
- * @queryparam {string} [title] - Optional title keyword for filtering
+ * @param {number} [req.query.currentPage=1] - The current page number
+ * @param {number} [req.query.pageSize=10] - Number of articles per page
+ * @param {string} [req.query.title] - Title keyword for filtering
  *
- * @returns {Object} Response object containing users and pagination info
+ * @returns {Object} Response object containing article list and pagination info
  *  - articles: {Array<Object>} List of existing articles with properties:
  *    - id: {number} Article ID
  *    - title: {string} Article title
@@ -96,8 +96,8 @@ router.get("/:id", async function (req, res) {
  * @route POST /admin/article
  * @description Create a new article using the provided request body.
  *
- * @body {string} title - The title of the article
- * @body {string} content - The content of the article
+ * @param {string} req.body.title - The title of the article
+ * @param {string} [req.body.content] - The content of the article
  *
  * @returns {Object} JSON response containing the article details:
  *   - articles: {Object} Created article with properties:
@@ -156,8 +156,8 @@ router.delete("/:id", async function (req, res) {
  * @description Update an existing article by its ID with new title and/or content.
  *
  * @param {string} req.params.id - The ID of the article to update
- * @body {string} [title] - The new title of the article (optional)
- * @body {string} [content] - The new content of the article (optional)
+ * @param {string} [req.body.title] - The new title of the article
+ * @param {string} [req.body.content] - The new content of the article
  *
  * @returns {Object} JSON response containing the updated article:
  *   - articles: {Object} Updated article with properties:
@@ -188,7 +188,7 @@ router.put("/:id", async function (req, res) {
  * @description Retrieves an article by ID from the request path parameters.
  *
  * @param {import('express').Request} req - Express request object containing params.id
- * 
+ *
  * @returns {Promise<Article>} Resolves with the found article
  * @throws {NotFoundError} If no article is found with the provided ID
  */

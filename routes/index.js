@@ -5,21 +5,18 @@ const { success, failure } = require("../utils/responses");
 
 /**
  * @route GET /
- * @description Retrieve homepage content including recommended, most liked, and introductory courses.
+ * @description Retrieve homepage content
  *
  * @returns {Object} JSON response with categorized course lists:
- * {
- *   recommendedCourses: Course[], // Courses marked as recommended
- *   likesCourses: Course[],       // Top liked courses
- *   introductoryCourses: Course[] // Courses marked as introductory
- * }
+ *   - recommendedCourses: {Object}   -Refer to the Course model for structure
+ *   - likesCourses: {Object}         -Refer to the Course model for structure
+ *   - introductoryCourses: {Object}} -Refer to the Course model for structure
  *
  * @responsecode 200 - Homepage course lists returned successfully
  * @throws {Error} If an error occurs while fetching courses
  */
 router.get("/", async function (req, res, next) {
   try {
-    // Recommended Courses
     const recommendedCourses = await Course.findAll({
       attributes: { exclude: ["CategoryId", "UserId", "content"] },
       include: [
@@ -39,7 +36,6 @@ router.get("/", async function (req, res, next) {
       limit: 10,
     });
 
-    // 人气课程
     const likesCourses = await Course.findAll({
       attributes: { exclude: ["CategoryId", "UserId", "content"] },
       order: [

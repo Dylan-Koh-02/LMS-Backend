@@ -19,16 +19,24 @@ const { Op } = require("sequelize");
  * @param {string} req.body.username - User's username
  * @param {string} req.body.nickname - User's nickname
  * @param {string} req.body.password - User's password
- * @param {number} [sex=2] - User's sex (default 2)
- * @param {number} [role=0] - User's role (default 0)
  *
- * @returns {Object} JSON response with created user (password excluded)
- * {
- *   user: User
- * }
+ * @returns {Object} JSON response containing user details (excluding password):
+ *  - user: {Object} User object with properties:
+ *    - id: {number} User ID
+ *    - username: {string} User's username
+ *    - email: {string} User's email
+ *    - sex: {number} User's gender
+ *    - nickname: {string} User's nickname
+ *    - company: {string} User's company
+ *    - introduce: {string} User's introduction
+ *    - avatar: {string} URL to user's avatar
+ *    - role: {string} User's role
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
  *
  * @responsecode 201 - User created successfully
- * @throws {Error} If user creation fails (e.g., validation error)
+ * @throws {SequelizeValidationError} If email or username already exists
+ * @throws {Error} For any other errors during creation
  */
 router.post("/sign_up", async function (req, res) {
   try {

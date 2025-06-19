@@ -12,15 +12,24 @@ const { Op } = require("sequelize");
  * @param {number} [req.query.currentPage=1] - Current page number for pagination (default is 1)
  * @param {number} [req.query.pageSize=10] - Number of courses per page (default is 10)
  *
- * @returns {Object} JSON response with search results and pagination info:
- * {
- *   courses: Course[],
- *   pagination: {
- *     total: number,
- *     currentPage: number,
- *     pageSize: number
- *   }
- * }
+ * @returns {Object} JSON response with courses list and pagination info:
+ *  - courses: {Array<Object>}Array of course objects matching the filters.
+ *    - id: {number} Course ID
+ *    - name: {string} Course name
+ *    - categoryId: {number} Category ID
+ *    - userId: {number} User ID of the course creator
+ *    - image: {string} Course image URL
+ *    - recommended: {boolean} Whether the course is recommended
+ *    - introductory: {boolean} Whether the course is introductory
+ *    - content: {string} Course content
+ *    - likesCount: {number} Number of likes
+ *    - chaptersCount: {number} Number of chapters in the course
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
+ *  - pagination: {Object} Pagination metadata
+ *    - total: {number} Total number of matching articles
+ *    - currentPage: {number} Current page number
+ *    - pageSize: {number} Number of items per page
  *
  * @responsecode 200 - Search completed successfully
  * @throws {Error} If an error occurs during the search operation

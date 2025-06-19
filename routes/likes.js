@@ -14,14 +14,23 @@ const { NotFoundError } = require("../utils/errors");
  * @sets {string} req.userId - The authenticated user's ID (set by authentication middleware)
  *
  * @returns {Object} JSON response with liked courses and pagination info:
- * {
- *   courses: Course[],
- *   pagination: {
- *     total: number,
- *     currentPage: number,
- *     pageSize: number
- *   }
- * }
+ *  - courses: {Array<Object>}Array of course objects matching the filters.
+ *    - id: {number} Course ID
+ *    - name: {string} Course name
+ *    - categoryId: {number} Category ID
+ *    - userId: {number} User ID of the course creator
+ *    - image: {string} Course image URL
+ *    - recommended: {boolean} Whether the course is recommended
+ *    - introductory: {boolean} Whether the course is introductory
+ *    - chaptersCount: {number} Number of chapters in the course
+ *    - content: {string} Course content
+ *    - likesCount: {number} Number of likes
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
+ *  - pagination: {Object} Pagination metadata
+ *    - total: {number} Total number of matching articles
+ *    - currentPage: {number} Current page number
+ *    - pageSize: {number} Number of items per page
  *
  * @responsecode 200 - Liked courses returned successfully
  * @throws {Error} If user not found or retrieval fails
@@ -62,8 +71,7 @@ router.get("/", async function (req, res) {
  * @description Like or unlike a course based on the user's current like status.
  *
  * @param {string} req.body.courseId - The ID of the course to like or unlike
- *
- * @sets {string} req.userId - The authenticated user's ID (set by authentication middleware)
+ * @param {string} req.userId - The authenticated user's ID (set by authentication middleware)
  *
  * @returns {Object} JSON response with a success message:
  * {

@@ -6,17 +6,38 @@ const { NotFoundError } = require("../utils/errors");
 
 /**
  * @route GET /chapters/:id
- * @description Get detailed information about a chapter by ID, including its course, course creator, and sibling chapters.
+ * @description Get detailed information about a chapter by ID
  *
  * @param {string} req.params.id - The ID of the chapter to retrieve
  *
- * @returns {Object} JSON response with chapter details:
- * {
- *   chapter: Chapter,
- *   course: Course,
- *   user: User, // Course creator
- *   chapters: Chapter[] // All chapters in the same course (excluding content)
- * }
+ * @returns {Object} JSON response with existing chapter details:
+ *   - chapter: {Object} List of chapter with properties:
+ *     - id: {number} Chapter ID
+ *     - courseId: {string} Course ID
+ *     - title: {number} Chapter rank
+ *     - content: {string} Chapter content
+ *     - video: {string} Video URL
+ *     - rank: {number} Chapter rank
+ *     - createdAt: {string} Creation timestamp
+ *     - updatedAt: {string} Last update timestamp
+ *   - course: {Object} Associated course data with properties:
+ *     - id: {number} Course ID
+ *     - name: {string} Course name
+ *     - userId: {number} User ID of the course creator
+ *   - user: {Object} User data of the course creator with properties:
+ *     - id: {number} User ID
+ *     - username: {string} Username of the course creator
+ *     - nickname: {string} Nickname of the course creator
+ *     - avatar: {string} URL to the course creator's avatar
+ *     - company: {string} Company of the course creator
+ *   - chapters: {Array<Object>} List of all chapters in the course with properties:
+ *     - id: {number} Chapter ID
+ *     - courseId: {string} Course ID
+ *     - title: {number} Chapter rank
+ *     - video: {string} Video URL
+ *     - rank: {number} Chapter rank
+ *     - createdAt: {string} Creation timestamp
+ *     - updatedAt: {string} Last update timestamp
  *
  * @responsecode 200 - Chapter and related data returned successfully
  * @throws {NotFoundError} If the chapter with the given ID is not found
@@ -25,7 +46,7 @@ const { NotFoundError } = require("../utils/errors");
 router.get("/:id", async function (req, res) {
   try {
     const { id } = req.params;
-    /*const condition = {
+    /**const condition = {
       attributes: { exclude: ['CourseId'] },
       include: [
         {

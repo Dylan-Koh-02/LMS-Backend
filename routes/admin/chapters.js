@@ -9,10 +9,10 @@ const { success, failure } = require("../../utils/responses");
  * @route GET /admin/chapters
  * @description Get a paginated list of chapters filtered by courseId and optionally by title.
  *
- * @queryparam {string} courseId - The ID of the course to filter chapters (required).
- * @queryparam {number} [currentPage=1] - The current page number for pagination.
- * @queryparam {number} [pageSize=10] - Number of chapters per page.
- * @queryparam {string} [title] - Optional title keyword for filtering chapters.
+ * @param {string} req.query.courseId - The ID of the course to filter chapters (required).
+ * @param {number} [req.query.currentPage=1] - The current page number for pagination.
+ * @param {number} [req.query.pageSize=10] - Number of chapters per page.
+ * @param {string} [req.query.title] - Optional title keyword for filtering chapters.
  *
  * @returns {Object} JSON response with chapters list and pagination info:
  *   - chapters: {Array<Object>} List of existing chapters with properties:
@@ -123,11 +123,11 @@ router.get("/:id", async function (req, res) {
  * @route POST /admin/chapters
  * @description Create a new chapter using the provided request body.
  *
- * @body {string} courseId - The name of the chapter
- * @body {string} title - The rank of the chapter
- * @body {string} [content] - The content of the chapter
- * @body {string} [video] - The video URL of the chapter
- * @body {number} rank - The rank of the chapter
+ * @param {string} req.body.courseId - The name of the chapter
+ * @param {string} req.body.title - The rank of the chapter
+ * @param {string} [req.body.content] - The content of the chapter
+ * @param {string} [req.body.video] - The video URL of the chapter
+ * @param {number} req.body.rank - The rank of the chapter
  * 
  * @returns {Object} JSON response with created chapter details:
  *   - chapter: {Object} List of chapter with properties:
@@ -190,11 +190,11 @@ router.delete("/:id", async function (req, res) {
  * @description Update a single chapter by its ID.
  *
  * @param {string} req.params.id - The ID of the chapter to update.
- * @body {string} [courseId] - The name of the chapter
- * @body {string} [title] - The rank of the chapter
- * @body {string} [content] - The content of the chapter
- * @body {string} [video] - The video URL of the chapter
- * @body {number} [rank] - The rank of the chapter * 
+ * @param {string} [req.body.courseId] - The name of the chapter
+ * @param {string} [req.body.title] - The rank of the chapter
+ * @param {string} [req.body.content] - The content of the chapter
+ * @param {string} [req.body.video] - The video URL of the chapter
+ * @param {number} [req.body.rank] - The rank of the chapter * 
  * 
  * @returns {Object} JSON response with updated chapter details:
  *   - chapter: {Object} List of chapter with properties:

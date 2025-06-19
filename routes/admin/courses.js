@@ -9,13 +9,13 @@ const { success, failure } = require("../../utils/responses");
  * @route GET /
  * @description Get a paginated list of courses optionally filtered by categoryId, userID, name, recommended and introductory.
  *
- * @queryparam {number} [currentPage=1] - The current page number for pagination.
- * @queryparam {number} [pageSize=10] - Number of courses per page.
- * @queryparam {string} [categoryId] - Filter courses by category ID.
- * @queryparam {string} [userId] - Filter courses by user ID.
- * @queryparam {string} [name] - Partial match filter on course name.
- * @queryparam {string} [recommended] - Filter by recommended status ('true' or 'false').
- * @queryparam {string} [introductory] - Filter by introductory status ('true' or 'false').
+ * @param {number} [req.query.currentPage=1] - The current page number for pagination.
+ * @param {number} [req.query.pageSize=10] - Number of courses per page.
+ * @param {string} [req.query.categoryId] - Filter courses by category ID.
+ * @param {string} [req.query.userId] - Filter courses by user ID.
+ * @param {string} [req.query.name] - Partial match filter on course name.
+ * @param {string} [req.query.recommended] - Filter by recommended status ('true' or 'false').
+ * @param {string} [req.query.introductory] - Filter by introductory status ('true' or 'false').
  *
  * @param {import('express').Request} req - Express request object with query parameters.
  * @param {import('express').Response} res - Express response object.
@@ -31,13 +31,7 @@ const { success, failure } = require("../../utils/responses");
  *    - introductory: {boolean} Whether the course is introductory
  *    - content: {string} Course content
  *    - likesCount: {number} Number of likes
- *    - Category: {Object} Associated category data with properties:
- *      - id: {number} Category ID
- *      - name: {string} Category name
- *    - User: {Object} Associated user data with properties:
- *      - id: {number} User ID
- *      - username: {string} Username of the course creator
- *      - avatar: {string} Avatar URL of the course creator
+ *    - chaptersCount: {number} Number of chapters in the course
  *    - createdAt: {string} Creation timestamp
  *    - updatedAt: {string} Last update timestamp
  *  - pagination: {Object} Pagination metadata
@@ -121,9 +115,7 @@ router.get("/", async function (req, res) {
  * @description Get a single course by its ID.
  *
  * @param {string} req.params.id - The ID of the course to retrieve.
- * @param {import('express').Request} req - Express request object.
- * @param {import('express').Response} res - Express response object.
- *
+ * 
  * @returns {Object} JSON response with existing course details:
  *  - courses: {Object} Course objects matching the filters.
  *    - id: {number} Course ID
@@ -134,6 +126,7 @@ router.get("/", async function (req, res) {
  *    - recommended: {boolean} Whether the course is recommended
  *    - introductory: {boolean} Whether the course is introductory
  *    - content: {string} Course content
+ *    - chaptersCount: {number} Number of chapters in the course
  *    - likesCount: {number} Number of likes
  *    - Category: {Object} Associated category data with properties:
  *      - id: {number} Category ID
@@ -163,12 +156,12 @@ router.get("/:id", async function (req, res) {
  * @route POST /
  * @description Create a new course. The authenticated admin user will be set as the course owner.
  *
- * @body {string} categoryId - The ID of the category to which the course belongs.
- * @body {string} name - The name of the course.
- * @body {string} image - The URL of the course image.
- * @body {number} recommended - Whether the course is recommended (true or false).
- * @body {number} introductory - Whether the course is introductory (true or false).
- * @body {string} content - The content of the course.
+ * @param {string} req.body.categoryId - The ID of the category to which the course belongs.
+ * @param {string} req.body.name - The name of the course.
+ * @param {string} req.body.image - The URL of the course image.
+ * @param {number} req.body.recommended - Whether the course is recommended (true or false).
+ * @param {number} req.body.introductory - Whether the course is introductory (true or false).
+ * @param {string} req.body.content - The content of the course.
  *
  * @returns {Object} JSON response with created course details:
  *  - courses: {Object} Course objects matching the filters.
@@ -181,6 +174,7 @@ router.get("/:id", async function (req, res) {
  *    - introductory: {boolean} Whether the course is introductory
  *    - content: {string} Course content
  *    - likesCount: {number} Number of likes
+ *    - chaptersCount: {number} Number of chapters in the course
  *    - Category: {Object} Associated category data with properties:
  *      - id: {number} Category ID
  *      - name: {string} Category name
@@ -191,7 +185,9 @@ router.get("/:id", async function (req, res) {
  *    - createdAt: {string} Creation timestamp
  *    - updatedAt: {string} Last update timestamp
  *
- * @throws Will call failure response if any error occurs during creation.
+ * @responsecode 201 - Course created successfully
+ * @throws {SequelizeValidationError} If any validation fails on the course creation.
+ * @throws {Error} If any error occurs during course creation.
  */
 router.post("/", async function (req, res) {
   try {
@@ -242,12 +238,38 @@ router.delete("/:id", async function (req, res) {
  * @description Update a course by its ID.
  *
  * @param {string} req.params.id - The ID of the course to update.
- * @param {import('express').Request} req - Express request object containing updated course data in the body.
- * @param {import('express').Response} res - Express response object.
+ * @param {string} req.body.categoryId - The ID of the category to which the course belongs.
+ * @param {string} req.body.name - The name of the course.
+ * @param {string} req.body.image - The URL of the course image.
+ * @param {number} req.body.recommended - Whether the course is recommended (true or false).
+ * @param {number} req.body.introductory - Whether the course is introductory (true or false).
+ * @param {string} req.body.content - The content of the course.
  *
+ *  * @returns {Object} JSON response with updated course details:
+ *  - course: {Object} Course object matching the filters.
+ *    - id: {number} Course ID
+ *    - name: {string} Course name
+ *    - categoryId: {number} Category ID
+ *    - userId: {number} User ID of the course creator
+ *    - image: {string} Course image URL
+ *    - recommended: {boolean} Whether the course is recommended
+ *    - introductory: {boolean} Whether the course is introductory
+ *    - content: {string} Course content
+ *    - likesCount: {number} Number of likes
+ *    - chaptersCount: {number} Number of chapters in the course
+ *    - Category: {Object} Associated category data with properties:
+ *      - id: {number} Category ID
+ *      - name: {string} Category name
+ *    - User: {Object} Associated user data with properties:
+ *      - id: {number} User ID
+ *      - username: {string} Username of the course creator
+ *      - avatar: {string} Avatar URL of the course creator
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
+ * 
+ * @responsecode 200 - Course updated successfully
  * @throws {NotFoundError} If the course with the given ID does not exist.
- *
- * @returns {Object} JSON response with the updated course.
+ * @throws {Error} If an error occurs during the update.
  */
 router.put("/:id", async function (req, res) {
   try {

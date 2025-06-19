@@ -16,8 +16,8 @@ const crypto = require("crypto");
  * @route POST /admin/auth/sign_in
  * @description Authenticate an admin user using email or username and password, then return a JWT token.
  *
- * @body {string} login - Admin's email or username (required).
- * @body {string} password - Admin's password (required).
+ * @param {string} req.body.login - Admin's email or username 
+ * @param {string} req.body.password - Admin's password 
  *
  * @returns {Object} JSON response containing the authentication token.
  *  - token: JWT token valid for 30 days.

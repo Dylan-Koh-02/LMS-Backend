@@ -11,15 +11,31 @@ const { success, failure } = require("../utils/responses");
  * @param {number} [req.query.currentPage=1] - The current page number for pagination (default is 1)
  * @param {number} [req.query.pageSize=10] - Number of courses per page (default is 10)
  *
- * @returns {Object} JSON response with paginated list of courses:
- * {
- *   courses: Course[],
- *   pagination: {
- *     total: number,
- *     currentPage: number,
- *     pageSize: number
- *   }
- * }
+ * @returns {Object} JSON response with courses list and pagination info:
+ *  - courses: {Array<Object>}Array of course objects matching the filters.
+ *    - id: {number} Course ID
+ *    - name: {string} Course name
+ *    - categoryId: {number} Category ID
+ *    - userId: {number} User ID of the course creator
+ *    - image: {string} Course image URL
+ *    - recommended: {boolean} Whether the course is recommended
+ *    - introductory: {boolean} Whether the course is introductory
+ *    - content: {string} Course content
+ *    - likesCount: {number} Number of likes
+ *    - chaptersCount: {number} Number of chapters in the course
+ *    - Category: {Object} Associated category data with properties:
+ *      - id: {number} Category ID
+ *      - name: {string} Category name
+ *    - User: {Object} Associated user data with properties:
+ *      - id: {number} User ID
+ *      - username: {string} Username of the course creator
+ *      - avatar: {string} Avatar URL of the course creator
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
+ *  - pagination: {Object} Pagination metadata
+ *    - total: {number} Total number of matching articles
+ *    - currentPage: {number} Current page number
+ *    - pageSize: {number} Number of items per page
  *
  * @responsecode 200 - Courses list returned successfully
  * @throws {Error} If categoryId is missing or course retrieval fails
@@ -32,7 +48,7 @@ router.get("/", async function (req, res) {
     const offset = (currentPage - 1) * pageSize;
 
     if (!query.categoryId) {
-      throw new Error("获取课程列表失败，分类ID不能为空。");
+      throw new Error("Category ID is required.");
     }
 
     const condition = {
@@ -44,7 +60,7 @@ router.get("/", async function (req, res) {
     };
 
     const { count, rows } = await Course.findAndCountAll(condition);
-    success(res, "查询课程列表成功。", {
+    success(res, "Query Successful.", {
       courses: rows,
       pagination: {
         total: count,
@@ -63,34 +79,32 @@ router.get("/", async function (req, res) {
  *
  * @param {string} req.params.id - The ID of the course to retrieve
  *
- * @returns {Object} JSON response with course details:
- * {
- *   course: {
- *     id: number,
- *     title: string,
- *     ...,
- *     category: {
- *       id: number,
- *       name: string
- *     },
- *     user: {
- *       id: number,
- *       username: string,
- *       nickname: string,
- *       avatar: string,
- *       company: string
- *     },
- *     chapters: [
- *       {
- *         id: number,
- *         title: string,
- *         rank: number,
- *         createdAt: string
- *       },
- *       ...
- *     ]
- *   }
- * }
+ * @returns {Object} JSON response with existing course details:
+ *  - courses: {Object} Course objects matching the filters.
+ *    - id: {number} Course ID
+ *    - name: {string} Course name
+ *    - categoryId: {number} Category ID
+ *    - userId: {number} User ID of the course creator
+ *    - image: {string} Course image URL
+ *    - recommended: {boolean} Whether the course is recommended
+ *    - introductory: {boolean} Whether the course is introductory
+ *    - content: {string} Course content
+ *    - likesCount: {number} Number of likes
+ *    - chaptersCount: {number} Number of chapters in the course
+ *    - category: {Object} Associated category data with properties:
+ *      - id: {number} Category ID
+ *      - name: {string} Category name
+ *    - user: {Object} Associated user data with properties:
+ *      - id: {number} User ID
+ *      - username: {string} Username of the course creator
+ *      - avatar: {string} Avatar URL of the course creator
+ *    - chapters: {Array<Object>} List of chapters associated with the course
+ *      - id: {number} Chapter ID
+ *      - title: {string} Chapter title
+ *      - rank: {number} Chapter rank
+ *      - createdAt: {string} Creation timestamp
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
  *
  * @responsecode 200 - Course found successfully
  * @throws {NotFoundError} If no course exists with the given ID

@@ -9,9 +9,20 @@ const bcrypt = require("bcryptjs");
  * @route GET /users/me
  * @description Retrieve information about the currently authenticated user.
  *
- * @returns {Object} JSON response containing the current user's information.
- *  - user: Object representing the authenticated user's data.
- *
+ * @returns {Object} JSON response containing user details
+ *  - user: {Object} User object with properties:
+ *    - id: {number} User ID
+ *    - username: {string} User's username
+ *    - email: {string} User's email
+ *    - sex: {number} User's gender
+ *    - nickname: {string} User's nickname
+ *    - company: {string} User's company
+ *    - introduce: {string} User's introduction
+ *    - avatar: {string} URL to user's avatar
+ *    - role: {string} User's role
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
+ * 
  * @response 200 - User information successfully retrieved.
  * @throws {Error} If there is an issue fetching the user information.
  */
@@ -28,14 +39,25 @@ router.get("/me", async function (req, res) {
  * @route PUT /users/info
  * @description Update the current authenticated user's information.
  *
- * @body {string} [nickname] - User's nickname.
- * @body {string} [sex] - User's gender.
- * @body {string} [company] - User's company or organization.
- * @body {string} [introduce] - User's personal introduction or bio.
- * @body {string} [avatar] - URL or identifier for the user's avatar image.
+ * @param {string} [req.body.nickname] - User's nickname.
+ * @param {string} [req.body.sex] - User's gender.
+ * @param {string} [req.body.company] - User's company or organization.
+ * @param {string} [req.body.introduce] - User's personal introduction or bio.
+ * @param {string} [req.body.avatar] - URL or identifier for the user's avatar image.
  *
- * @returns {Object} JSON response containing the updated user information.
- *  - user: Object representing the updated user data.
+ * @returns {Object} JSON response containing user details
+ *  - user: {Object} User object with properties:
+ *    - id: {number} User ID
+ *    - username: {string} User's username
+ *    - email: {string} User's email
+ *    - sex: {number} User's gender
+ *    - nickname: {string} User's nickname
+ *    - company: {string} User's company
+ *    - introduce: {string} User's introduction
+ *    - avatar: {string} URL to user's avatar
+ *    - role: {string} User's role
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
  *
  * @response 200 - User information updated successfully.
  * @throws {Error} If an error occurs during the update process.
@@ -62,14 +84,25 @@ router.put("/info", async function (req, res) {
  * @route PUT /users/account
  * @description Update the current authenticated user's account information, including email, username, and password.
  *
- * @body {string} email - New email address.
- * @body {string} username - New username.
- * @body {string} currentPassword - Current password (required for authentication).
- * @body {string} [password] - New password (optional).
- * @body {string} [passwordConfirmation] - Confirmation of the new password (must match `password`).
+ * @param {string} [req.body.email] - New email address.
+ * @param {string} [req.body.username] - New username.
+ * @param {string} req.body.currentPassword - Current password (required for authentication).
+ * @param {string} [req.body.password] - New password (optional).
+ * @param {string} [req.body.passwordConfirmation] - Confirmation of the new password (must match `password`).
  *
- * @returns {Object} JSON response containing the updated user information (excluding password).
- *  - user: Object representing the updated user data without password.
+ * @returns {Object} JSON response containing user details
+ *  - user: {Object} User object with properties:
+ *    - id: {number} User ID
+ *    - username: {string} User's username
+ *    - email: {string} User's email
+ *    - sex: {number} User's gender
+ *    - nickname: {string} User's nickname
+ *    - company: {string} User's company
+ *    - introduce: {string} User's introduction
+ *    - avatar: {string} URL to user's avatar
+ *    - role: {string} User's role
+ *    - createdAt: {string} Creation timestamp
+ *    - updatedAt: {string} Last update timestamp
  *
  * @response 200 - Account updated successfully.
  * @throws {BadRequestError} If current password is missing, incorrect, or if new password and confirmation do not match.

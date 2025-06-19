@@ -9,9 +9,9 @@ const { success, failure } = require("../../utils/responses");
  * @route GET /admin/categories
  * @description Get a paginated list of categories, optionally filtered by name.
  *
- * @queryparam {number} [currentPage=1] - The current page number
- * @queryparam {number} [pageSize=10] - Number of categories per page
- * @queryparam {string} [name] - Optional name keyword for filtering categories
+ * @param {number} [req.query.currentPage=1] - The current page number
+ * @param {number} [req.query.pageSize=10] - Number of categories per page
+ * @param {string} [req.query.name] - Name keyword for filtering
  *
  * @returns {Object} JSON response with category list and pagination info:
  *   - categories: {Array<Object>} List of existing categories with properties:
@@ -99,8 +99,8 @@ router.get("/:id", async function (req, res) {
  * @route POST /admin/categories
  * @description Create a new category using the provided request body.
  *
- * @body {string} name - The name of the category
- * @body {string} rank - The rank of the category
+ * @param {string} req.body.name - The name of the category
+ * @param {string} req.body.rank - The rank of the category
  *
  * @returns {Object} JSON response with category details:
  *   - categories: {Object} Created category with properties:
@@ -161,8 +161,8 @@ router.delete("/:id", async function (req, res) {
  * @description Update a category by its ID.
  *
  * @param {string} req.params.id - The ID of the category to update.
- * @body {string} [name] - Updated name of the category
- * @body {number} [rank] - Updated rank/order of the category 
+ * @param {string} [req.body.name] - Updated name of the category
+ * @param {number} [req.body.rank] - Updated rank/order of the category 
  *
  * @returns {Object} JSON response with updated category details:
  *   - categories: {Object} Category with properties:
